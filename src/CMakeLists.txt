@@ -96,6 +96,38 @@ set (mraa_LIB_MOCK_SRCS_NOAUTO
   ${PROJECT_SOURCE_DIR}/src/mock/mock_board_uart.c
 )
 
+set (mraa_LIB_FOGDEVICES_SRCS_NOAUTO
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices_board.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices_board_gpio.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices_board_aio.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices_board_i2c.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices_board_spi.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/fogdevices_board_uart.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Clients.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Heap.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/LinkedList.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Log.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Messages.c
+#  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTAsync.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTClient.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTPacket.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTPacketOut.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTPersistence.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTPersistenceDefault.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTProtocolClient.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTProtocolOut.c
+#  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/MQTTVersion.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/SocketBuffer.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Socket.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/SSLSocket.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/StackTrace.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Thread.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/Tree.c
+  ${PROJECT_SOURCE_DIR}/src/fogdevices/mqtt/utf-8.c
+)
+
+
 if (JSONPLAT)
   find_package (JSON-C QUIET)
   if (${JSON-C_FOUND})
@@ -126,6 +158,12 @@ if (MOCKPLAT)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMSYS=1")
   endif ()
 endif()
+
+if (FOGDEVICESPLAT)
+  add_subdirectory(fogdevices)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFOGDEVICESPLAT=1")
+endif()
+
 
 if (USBPLAT)
   message (STATUS "INFO - Adding USB platforms")

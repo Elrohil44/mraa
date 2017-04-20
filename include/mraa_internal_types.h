@@ -87,6 +87,10 @@
 #define AIO_KEY "AIO"
 
 #define MRAA_JSONPLAT_ENV_VAR "MRAA_JSON_PLATFORM"
+//#define MRAA_FOGDEVICESPLAT_ENV_VAR "MRAA_FOGDEVICES_PLATFORM"
+#define MRAA_FOGDEVICESPLAT_ENV_VAR_ID "MRAA_FOGDEVICES_PLATFORM_ID"
+#define MRAA_FOGDEVICESPLAT_ENV_VAR_BROKER "MRAA_FOGDEVICES_PLATFORM_BROKER"
+
 
 #ifdef FIRMATA
 struct _firmata {
@@ -123,6 +127,11 @@ struct _gpio {
     mraa_gpio_dir_t mock_dir; /**< mock direction of the pin */
     int mock_state; /**< mock state of the pin */
 #endif
+#if defined(FOGDEVICESPLAT)
+    mraa_gpio_dir_t mock_dir; /**< mock direction of the pin */
+    int mock_state; /**< mock state of the pin */
+#endif
+
     /*@}*/
 };
 

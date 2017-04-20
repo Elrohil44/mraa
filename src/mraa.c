@@ -141,6 +141,23 @@ imraa_init()
 #elif defined(MOCKPLAT)
         // Use mock platform
         platform_type = mraa_mock_platform();
+#elif defined(FOGDEVICESPLAT)
+        // Use fogdevices platform
+        char* env_var_br;
+        char* env_var_id;
+
+        env_var_br = getenv(MRAA_FOGDEVICESPLAT_ENV_VAR_BROKER);
+        env_var_id = getenv(MRAA_FOGDEVICESPLAT_ENV_VAR_ID);
+
+        printf(">>%s %s/n",env_var_br, env_var_id);
+
+        if (env_var_id == NULL || env_var_br == NULL) {
+            platform_type = mraa_fogdevices_platform(NULL, NULL);
+        } else {
+            platform_type = mraa_fogdevices_platform(env_var_id, env_var_br);
+        }
+
+        
 #else
 #error mraa_ARCH NOTHING
 #endif

@@ -71,6 +71,14 @@ mraa_platform_t mraa_arm_platform();
 mraa_platform_t mraa_mock_platform();
 
 /**
+ * setup a fogdevices platform
+ *
+ * @return mraa_platform_t of the init'ed platform
+ */
+mraa_platform_t mraa_fogdevices_platform(char*, char*);
+
+
+/**
  * runtime detect running usb platform extender
  *
  * @return mraa_platform_t of the detected platform extender
