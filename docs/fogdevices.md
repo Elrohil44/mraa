@@ -25,37 +25,39 @@ SPI, I2C, UART - TBD
 Communication Protocol
 --------
 FogDevices platform registers itself to the MQTT message broker and subscribes to the following topics:
-* fogdevicesplatform/[ID]/slave/ADC/0
-* fogdevicesplatform/[ID]/slave/ADC/1
-* fogdevicesplatform/[ID]/slave/ADC/2
-* fogdevicesplatform/[ID]/slave/ADC/3
-* fogdevicesplatform/[ID]/slave/GPIO/0
-* fogdevicesplatform/[ID]/slave/GPIO/1
-* fogdevicesplatform/[ID]/slave/GPIO/2
-* fogdevicesplatform/[ID]/slave/GPIO/3
-
+```
+fogdevicesplatform/[ID]/slave/ADC/0
+fogdevicesplatform/[ID]/slave/ADC/1
+fogdevicesplatform/[ID]/slave/ADC/2
+fogdevicesplatform/[ID]/slave/ADC/3
+fogdevicesplatform/[ID]/slave/GPIO/0
+fogdevicesplatform/[ID]/slave/GPIO/1
+fogdevicesplatform/[ID]/slave/GPIO/2
+fogdevicesplatform/[ID]/slave/GPIO/3
+```
 and publishes on the following:
-* fogdevicesplatform/[ID]/master/GPIO/0
-* fogdevicesplatform/[ID]/master/GPIO/1
-* fogdevicesplatform/[ID]/master/GPIO/2
-* fogdevicesplatform/[ID]/master/GPIO/3
-
+```
+fogdevicesplatform/[ID]/master/GPIO/0
+fogdevicesplatform/[ID]/master/GPIO/1
+fogdevicesplatform/[ID]/master/GPIO/2
+fogdevicesplatform/[ID]/master/GPIO/3
+```
 
 
 Configuration
 --------
 Prior to use the platform, the environemental variables has to be set e.g.:
 
-'''
+```
 export MRAA_FOGDEVICES_PLATFORM_ID="simpdev1"
 export MRAA_FOGDEVICES_PLATFORM_BROKER="iot.eclipse.org"
-'''
+```
 
 the default values are:
-'''
+```
 "tcp://iot.eclipse.org:1883"
 "ExampleClientPub"
-'''
+```
 
 
 Building
