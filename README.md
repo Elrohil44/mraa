@@ -56,7 +56,7 @@ JSON platform
 
 FogDevices
 ----
-* [FogDevices emulated platform](..master/docs/fogdevices.md)
+* [FogDevices emulated platform](../master/docs/fogdevices.md)
 
 Installing on your board
 ========================
