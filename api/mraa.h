@@ -19,6 +19,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -34,6 +36,7 @@ extern "C" {
 #include "mraa/i2c.h"
 #include "mraa/uart.h"
 #include "mraa/uart_ow.h"
+#include "mraa/led.h"
 
 #ifdef __cplusplus
 }

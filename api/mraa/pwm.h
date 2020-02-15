@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -33,7 +35,7 @@
  * of resolution so make sure you check the board & pin you are using before
  * hand.
  *
- * @snippet cycle-pwm3.c Interesting
+ * @snippet pwm.c Interesting
  */
 
 #ifdef __cplusplus
@@ -45,6 +47,7 @@ extern "C" {
 
 #include "common.h"
 
+/** Mraa Pwm Context */
 typedef struct _pwm* mraa_pwm_context;
 
 /**

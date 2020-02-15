@@ -2,24 +2,7 @@
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
  * Copyright (c) 2016 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include <stdlib.h>
@@ -96,7 +79,7 @@ mraa_firmata_i2c_init_bus_replace(mraa_i2c_context dev)
     char buff[4];
     buff[0] = FIRMATA_START_SYSEX;
     buff[1] = FIRMATA_I2C_CONFIG;
-    buff[2] = delay & 0xFF, (delay >> 8) & 0xFF;
+    buff[2] = delay & 0xFF;
     buff[3] = FIRMATA_END_SYSEX;
     mraa_uart_write(firmata_dev->uart, buff, 4);
 
@@ -217,7 +200,7 @@ mraa_firmata_i2c_read_word_data(mraa_i2c_context dev, uint8_t command)
             uint8_t rawdata[2];
             rawdata[0] = firmata_dev->i2cmsg[dev->addr][command];
             rawdata[1] = firmata_dev->i2cmsg[dev->addr][command+1];
-            uint16_t data = (uint16_t) rawdata;
+            uint16_t data = (uint16_t) *rawdata;
             uint8_t high = (data & 0xFF00) >> 8;
             data = (data << 8) & 0xFF00;
             data |= high;
@@ -520,6 +503,14 @@ mraa_firmata_pwm_enable_replace(mraa_pwm_context dev, int enable)
     return MRAA_SUCCESS;
 }
 
+static mraa_result_t
+mraa_firmata_pwm_period_replace(mraa_pwm_context dev, int period)
+{
+    syslog(LOG_WARNING, "You cannot set period of a PWM pin with Firmata\n");
+
+    return MRAA_ERROR_FEATURE_NOT_IMPLEMENTED;
+}
+
 static void*
 mraa_firmata_pull_handler(void* vp)
 {
@@ -683,6 +674,7 @@ mraa_firmata_plat_init(const char* uart_dev)
     b->adv_func->pwm_write_replace = &mraa_firmata_pwm_write_replace;
     b->adv_func->pwm_read_replace = &mraa_firmata_pwm_read_replace;
     b->adv_func->pwm_enable_replace = &mraa_firmata_pwm_enable_replace;
+    b->adv_func->pwm_period_replace = &mraa_firmata_pwm_period_replace;
 
     b->adv_func->i2c_init_bus_replace = &mraa_firmata_i2c_init_bus_replace;
     b->adv_func->i2c_set_frequency_replace = &mraa_firmata_i2c_frequency;

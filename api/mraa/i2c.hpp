@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -38,7 +40,7 @@ namespace mraa
  * selecting the correct address
  * @htmlinclude i2c.txt
  *
- * @snippet I2c-compass.cpp Interesting
+ * @snippet i2c.cpp Interesting
  */
 class I2c
 {
@@ -65,7 +67,7 @@ class I2c
     /**
      * I2C constructor, takes a pointer to a I2C context and initialises the I2C class
      *
-     * @param void * to an I2C context
+     * @param i2c_context void * to an I2C context
      */
     I2c(void* i2c_context)
     {

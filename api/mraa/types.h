@@ -19,6 +19,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -46,31 +48,40 @@ typedef enum {
     MRAA_BEAGLEBONE = 6,            /**< The different BeagleBone Black Modes B/C */
     MRAA_BANANA = 7,                /**< Allwinner A20 based Banana Pi and Banana Pro */
     MRAA_INTEL_NUC5 = 8,            /**< The Intel 5th generations Broadwell NUCs */
-    MRAA_96BOARDS = 9,            /**< Linaro 96boards */
+    MRAA_96BOARDS = 9,              /**< Linaro 96boards */
     MRAA_INTEL_SOFIA_3GR = 10,      /**< The Intel SoFIA 3GR */
-    MRAA_INTEL_CHERRYHILLS = 11,     /**< The Intel Braswell Cherryhills */
-    MRAA_UP = 12,                    /**< The UP Board */
-    MRAA_INTEL_JOULE_EXPANSION = 13,      /**< The Intel Joule Expansion Board */
+    MRAA_INTEL_CHERRYHILLS = 11,    /**< The Intel Braswell Cherryhills */
+    MRAA_UP = 12,                   /**< The UP Board */
+    MRAA_INTEL_JOULE_EXPANSION = 13,/**< The Intel Joule Expansion Board */
 #if __STDC_VERSION__ >= 199901L
     MRAA_INTEL_GT_TUCHUCK = MRAA_INTEL_JOULE_EXPANSION, // deprecated
 #endif
     MRAA_PHYBOARD_WEGA = 14,        /**< The phyBOARD-Wega */
-    MRAA_ALTERA_SOCFPGA = 15,       /**< Terasic DE-Nano-SoC Board */
-
+    MRAA_DE_NANO_SOC = 15,          /**< Terasic DE-Nano-SoC Board */
+    MRAA_UP2 = 16,                  /**< The UP^2 Board */
+    MRAA_MTK_LINKIT = 17,           /**< Mediatek MT7688 based Linkit boards */
+    MRAA_MTK_OMEGA2 = 18,           /**< MT7688 based Onion Omega2 board */
+    MRAA_IEI_TANK = 19,             /**< IEI Tank System*/
+    MRAA_ROCKPI4 = 20,              /**< Radxa ROCK PI 4 Models A/B */
+    MRAA_ADLINK_IPI = 21,           /**< Adlink Industrial PI */
+    MRAA_ADLINK_LEC_AL = 22,        /**< Adlink LEC-AL*/
+    MRAA_ADLINK_LEC_AL_AI = 23,        /**< Adlink LEC-AL*/
+    MRAA_UPXTREME = 24,             /**< The UPXTREME Board */
     // USB platform extenders start at 256
     MRAA_FTDI_FT4222 = 256,         /**< FTDI FT4222 USB to i2c bridge */
 
     // contains bit 9 so is subplatform
+    MRAA_GROVEPI = 1024,            /**< GrovePi shield i2c bridge */
     MRAA_GENERIC_FIRMATA = 1280,    /**< Firmata uart platform/bridge */
 
+    MRAA_ANDROID_PERIPHERALMANAGER = 95, /**< Android Things peripheral manager platform */
     MRAA_MOCK_PLATFORM = 96,        /**< Mock platform, which requires no real hardware */
-    MRAA_JSON_PLATFORM = 97,        /**< User initialised platform from json*/
+    MRAA_JSON_PLATFORM = 97,        /**< User initialised platform from json */
     MRAA_NULL_PLATFORM = 98,        /**< Platform with no capabilities that hosts a sub platform  */
 
-    MRAA_FOGDEVICES_PLATFORM = 512,      /**< FogDevices platform that is used with FogDevices emulator */ 
 
-    MRAA_UNKNOWN_PLATFORM =
-    99 /**< An unknown platform type, typically will load INTEL_GALILEO_GEN1 */
+    MRAA_UNKNOWN_PLATFORM = 99,      /**< An unknown platform type, typically will load INTEL_GALILEO_GEN1 */
+    MRAA_FOGDEVICES_PLATFORM = 512 /**< FogDevices platform that is used with FogDevices emulator */
 } mraa_platform_t;
 
 /**
@@ -247,6 +258,9 @@ typedef enum {
     MRAA_I2C_HIGH = 2  /**< up to 3.4Mhz */
 } mraa_i2c_mode_t;
 
+/**
+ * Enum representing different uart parity states
+ */
 typedef enum {
     MRAA_UART_PARITY_NONE = 0,
     MRAA_UART_PARITY_EVEN = 1,

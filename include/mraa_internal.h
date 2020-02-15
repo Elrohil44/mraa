@@ -2,24 +2,7 @@
  * Author: Thomas Ingleby <thomas.c.ingleby@intel.com>
  * Copyright (c) 2014 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -38,7 +21,9 @@ extern "C" {
 
 extern mraa_board_t* plat;
 extern char* platform_name;
+#if !defined(PERIPHERALMAN)
 extern mraa_iio_info_t* plat_iio;
+#endif
 extern mraa_lang_func_t* lang_func;
 
 /**
@@ -64,6 +49,13 @@ mraa_platform_t mraa_x86_platform();
 mraa_platform_t mraa_arm_platform();
 
 /**
+ * runtime detect running mips platforms
+ *
+ * @return mraa_platform_t of the init'ed platform
+ */
+mraa_platform_t mraa_mips_platform();
+
+/**
  * setup a mock platform
  *
  * @return mraa_platform_t of the init'ed platform
@@ -76,14 +68,6 @@ mraa_platform_t mraa_mock_platform();
  * @return mraa_platform_t of the init'ed platform
  */
 mraa_platform_t mraa_fogdevices_platform(char*, char*);
-
-
-/**
- * runtime detect running usb platform extender
- *
- * @return mraa_platform_t of the detected platform extender
- */
-mraa_platform_t mraa_usb_platform_extender(mraa_board_t* board);
 
 /**
  * runtime detect iio subsystem
@@ -166,6 +150,16 @@ mraa_result_t mraa_atoi(char* intStr, int* value);
  * @return the matching i2c-dev bus id or -1
  */
 int mraa_find_i2c_bus_pci(const char* pci_device, const char *pci_id, const char* adapter_name);
+
+/**
+ * helper function to find the uart device based on pci data
+ *
+ * @param pci_dev_path points to the location of tty device which corresponds
+ * to the uart device available on the platform
+ * @param dev_name as retrieved from pci_dev_path
+ * @return Result of the operation
+ */
+mraa_result_t mraa_find_uart_bus_pci(const char* pci_dev_path, char** dev_name);
 
 #if defined(IMRAA)
 /**

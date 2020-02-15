@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -70,11 +72,27 @@ typedef enum {
 } Edge;
 
 /**
+ * Gpio Input modes
+ */
+typedef enum {
+    MODE_IN_ACTIVE_HIGH = 0, /**< Resistive High */
+    MODE_IN_ACTIVE_LOW = 1,  /**< Resistive Low */
+} InputMode;
+
+/**
+ * Gpio output driver modes
+ */
+typedef enum {
+    MODE_OUT_OPEN_DRAIN = 0, /**< Open Drain Configuration */
+    MODE_OUT_PUSH_PULL = 1,  /**< Push Pull Configuration */
+} OutputMode;
+
+/**
  * @brief API to General Purpose IO
  *
  * This file defines the gpio interface for libmraa
  *
- * @snippet Blink-IO.cpp Interesting
+ * @snippet gpio.cpp Interesting
  */
 class Gpio
 {
@@ -111,7 +129,7 @@ class Gpio
      * Gpio Constructor, takes a pointer to the GPIO context and initialises
      * the GPIO class
      *
-     * @param void * to GPIO context
+     * @param gpio_context void * to GPIO context
      */
     Gpio(void* gpio_context)
     {
@@ -314,6 +332,30 @@ class Gpio
             return mraa_gpio_get_pin_raw(m_gpio);
         }
         return mraa_gpio_get_pin(m_gpio);
+    }
+
+    /**
+     * Change Gpio input mode
+     *
+     * @param mode The mode to change the gpio input
+     * @return Result of operation
+     */
+    Result
+    inputMode(InputMode mode)
+    {
+        return (Result )mraa_gpio_input_mode(m_gpio, (mraa_gpio_input_mode_t) mode);
+    }
+
+    /**
+     * Change Gpio output driver mode
+     *
+     * @param mode Set output driver mode
+     * @return Result of operation
+     */
+    Result
+    outputMode(OutputMode mode)
+    {
+        return (Result) mraa_gpio_out_driver_mode(m_gpio, (mraa_gpio_out_driver_mode_t) mode);
     }
 
   private:

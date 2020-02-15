@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -52,7 +54,7 @@ typedef struct _firmata* mraa_firmata_context;
  * Initialise firmata context on a feature. This feature is what will be
  * listened on if you request a response callback
  *
- * @param firmata feature
+ * @param feature firmata feature
  * @return firmata context or NULL
  */
 mraa_firmata_context mraa_firmata_init(int feature);

@@ -3,24 +3,7 @@
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
  * Copyright (c) 2014, 2015 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include <stdlib.h>
@@ -102,8 +85,8 @@ mraa_pwm_write_duty(mraa_pwm_context dev, int duty)
             return MRAA_ERROR_INVALID_RESOURCE;
         }
     }
-    char bu[64];
-    int length = sprintf(bu, "%d", duty);
+    char bu[MAX_SIZE];
+    int length = snprintf(bu, MAX_SIZE, "%d", duty);
     if (write(dev->duty_fp, bu, length * sizeof(char)) == -1)
     {
         syslog(LOG_ERR, "pwm%i write_duty: Failed to write to duty_cycle: %s", dev->pin, strerror(errno));
@@ -229,10 +212,11 @@ mraa_pwm_init(int pin)
         }
         pin = mraa_get_sub_platform_index(pin);
     }
-    if (pin < 0 || pin > board->phy_pin_count) {
+    if (pin < 0 || pin >= board->phy_pin_count) {
         syslog(LOG_ERR, "pwm_init: pin %i beyond platform definition", pin);
         return NULL;
     }
+
     if (board->pins[pin].capabilities.pwm != 1) {
         syslog(LOG_ERR, "pwm_init: pin %i not capable of pwm", pin);
         return NULL;
@@ -268,15 +252,31 @@ mraa_pwm_init(int pin)
         }
         return pret;
     }
+
+#if defined(PERIPHERALMAN)
+    return mraa_pwm_init_raw(chip, pin);
+#else
     return mraa_pwm_init_raw(chip, pinn);
+#endif
 }
 
 mraa_pwm_context
 mraa_pwm_init_raw(int chipin, int pin)
 {
     mraa_pwm_context dev = mraa_pwm_init_internal(plat == NULL ? NULL : plat->adv_func , chipin, pin);
-    if (dev == NULL)
+    if (dev == NULL) {
+        syslog(LOG_CRIT, "pwm: Failed to allocate memory for context");
         return NULL;
+    }
+
+    if (IS_FUNC_DEFINED(dev, pwm_init_raw_replace)) {
+        if (dev->advance_func->pwm_init_raw_replace(dev, pin) == MRAA_SUCCESS) {
+            return dev;
+        } else {
+            free(dev);
+            return NULL;
+        }
+    }
 
     char directory[MAX_SIZE];
     snprintf(directory, MAX_SIZE, SYSFS_PWM "/pwmchip%d/pwm%d", dev->chipid, dev->pin);
@@ -306,7 +306,9 @@ mraa_pwm_init_raw(int chipin, int pin)
         mraa_pwm_period_us(dev, plat->pwm_default_period);
         close(export_f);
     }
+
     mraa_pwm_setup_duty_fp(dev);
+
     return dev;
 }
 

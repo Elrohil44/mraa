@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -34,7 +36,7 @@
  * more information on spidev devices is available
  * [here](https://www.kernel.org/doc/Documentation/spi/spidev).
  *
- * @snippet spi_mcp4261.c Interesting
+ * @snippet spi.c Interesting
  */
 
 #ifdef __cplusplus

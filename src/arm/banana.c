@@ -3,24 +3,7 @@
  * Author: Michael Ring <mail@michael-ring.org>
  * Copyright (c) 2014 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include <stdlib.h>
@@ -107,7 +90,6 @@ mraa_banana_mmap_write(mraa_gpio_context dev, int value)
 {
     uint32_t readvalue =
     *(volatile uint32_t*) (mmap_reg + SUNXI_GPIO_DAT + (dev->pin / 32) * SUNXI_GPIO_PORT_OFFSET);
-    volatile uint32_t* addr;
     if (value) {
         *(volatile uint32_t*) (mmap_reg + SUNXI_GPIO_DAT + (dev->pin / 32) * SUNXI_GPIO_PORT_OFFSET) =
         (uint32_t)((1 << (dev->pin % 32)) | readvalue);
@@ -559,20 +541,20 @@ mraa_banana()
     b->def_uart_dev = 0;
     if ((uart3 >= 0) && (platform_detected == PLATFORM_BANANA_PI)) {
         b->def_uart_dev = b->uart_dev_count;
-        b->uart_dev[b->uart_dev_count].device_path = serialdev[uart3];
+        b->uart_dev[b->uart_dev_count].device_path = (char *)serialdev[uart3];
         b->uart_dev[b->uart_dev_count].rx = 11;
         b->uart_dev[b->uart_dev_count].tx = 13;
         b->uart_dev_count++;
     }
     if ((uart4 >= 0) && (platform_detected == PLATFORM_BANANA_PRO)) {
         b->def_uart_dev = b->uart_dev_count;
-        b->uart_dev[b->uart_dev_count].device_path = serialdev[uart4];
+        b->uart_dev[b->uart_dev_count].device_path = (char *)serialdev[uart4];
         b->uart_dev[b->uart_dev_count].rx = 10;
         b->uart_dev[b->uart_dev_count].tx = 8;
         b->uart_dev_count++;
     }
     if (uart7 >= 0) {
-        b->uart_dev[b->uart_dev_count].device_path = serialdev[uart7];
+        b->uart_dev[b->uart_dev_count].device_path = (char *)serialdev[uart7];
         if (platform_detected == PLATFORM_BANANA_PRO) {
             b->uart_dev[b->uart_dev_count].rx = 31;
             b->uart_dev[b->uart_dev_count].tx = 32;
@@ -583,7 +565,7 @@ mraa_banana()
         b->uart_dev_count++;
     }
     if (uart2 >= 0) {
-        b->uart_dev[b->uart_dev_count].device_path = serialdev[uart2];
+        b->uart_dev[b->uart_dev_count].device_path = (char *)serialdev[uart2];
         b->uart_dev[b->uart_dev_count].rx = 11;
         b->uart_dev[b->uart_dev_count].tx = 13;
         b->uart_dev_count++;

@@ -22,6 +22,7 @@ functionality.
 | C API Modules          | C++ API Classes              |
 |:----------------------:|:----------------------------:|
 | @ref gpio.h "gpio"     | @ref mraa::Gpio "Gpio class" |
+| @ref led.h "led"       | @ref mraa::Led "Led class"   |
 | @ref i2c.h "i2c"       | @ref mraa::I2c "I2c class"   |
 | @ref aio.h "aio"       | @ref mraa::Aio "Aio class"   |
 | @ref pwm.h "pwm"       | @ref mraa::Pwm "Pwm class"   |
@@ -48,19 +49,33 @@ Specific platform information for supported platforms is documented here:
 - @ref phyboard-wega
 - @ref nuc5
 - @ref up
+- @ref up2
 - @ref joule
 - @ref ft4222
+- @ref _96boards
+- @ref de10-nano
+- @ref firmata
+- @ref grovepi
+- @ref mock
+- @ref linkit_7688
+- @ref omega2
+- @ref iei-tank
+- @ref upXtreme
 
 ## DEBUGGING
 
 Sometimes it just doesn't want to work, let us try and help you, you can file
 issues in github or join us in #mraa on freenode IRC, hang around for a little
 while because we're not necessarily on 24/7, but we'll get back to you! Have a
-glance at our @debugging page too
+glance at our @ref debugging page too
 
 ## COMPILING
 
 More information on compiling is @ref building page.
+
+## STATIC CODE ANALYSIS
+
+See @ref static_code_analysis page.
 
 ## CONTRIBUTING
 

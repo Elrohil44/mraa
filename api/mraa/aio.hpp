@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -36,7 +38,7 @@ namespace mraa
  *
  * This file defines the aio interface for libmraa
  *
- * @snippet AioA0.cpp Interesting
+ * @snippet aio.cpp Interesting
  */
 class Aio
 {
@@ -56,9 +58,11 @@ class Aio
     }
     /**
      * Aio Constructor, takes a pointer to the AIO context and initialises
-     * the AIO class
+     * the AIO class. Aio pins are always 0 indexed reguardless of their
+     * position. Check your board mapping for details. An arduino style layout
+     * will have A0 as pin14 but AIO0.
      *
-     * @param void * to an AIO context
+     * @param aio_context void * to an AIO context
      */
     Aio(void* aio_context)
     {

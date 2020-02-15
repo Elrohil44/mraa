@@ -3,24 +3,7 @@
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
  * Copyright (c) 2014-2016 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include <stdlib.h>
@@ -33,10 +16,17 @@
 #define DEFAULT_BITS 10
 
 static int raw_bits;
+static unsigned int shifter_value;
+static float max_analog_value;
 
 static mraa_result_t
 aio_get_valid_fp(mraa_aio_context dev)
 {
+    if (dev == NULL) {
+        syslog(LOG_ERR, "aio: get_valid_fp: context is invalid");
+        return MRAA_ERROR_INVALID_HANDLE;
+    }
+
     if (IS_FUNC_DEFINED(dev, aio_get_valid_fp)) {
         return dev->advance_func->aio_get_valid_fp(dev);
     }
@@ -102,8 +92,14 @@ mraa_aio_init(unsigned int aio)
         aio = mraa_get_sub_platform_index(aio);
     }
 
-    // aio are always past the gpio_count in the pin array
-    pin = aio + board->gpio_count;
+    // Some boards, like the BBB, don't have sequential AIO pins
+    // They will have their own specific mapping to map aio -> pin
+    if((board->aio_non_seq) && (aio < board->aio_count)){
+        pin = board->aio_dev[aio].pin;
+    } else {
+        // aio are always past the gpio_count in the pin array
+        pin = aio + board->gpio_count;
+    }
 
     if (pin < 0 || pin >= board->phy_pin_count) {
         syslog(LOG_ERR, "aio: pin %i beyond platform definition", pin);
@@ -150,6 +146,14 @@ mraa_aio_init(unsigned int aio)
 
     raw_bits = mraa_adc_raw_bits();
 
+    if (raw_bits < dev->value_bit) {
+        shifter_value = dev->value_bit - raw_bits;
+        max_analog_value = ((1 << raw_bits) - 1) << shifter_value;
+    } else {
+        shifter_value = raw_bits - dev->value_bit;
+        max_analog_value = ((1 << raw_bits) - 1) >> shifter_value;
+    }
+
     return dev;
 }
 
@@ -166,8 +170,6 @@ mraa_aio_read(mraa_aio_context dev)
     }
 
     char buffer[17];
-    unsigned int shifter_value = 0;
-
     if (dev->adc_in_fp == -1) {
         if (aio_get_valid_fp(dev) != MRAA_SUCCESS) {
             syslog(LOG_ERR, "aio: Failed to get to the device");
@@ -194,15 +196,11 @@ mraa_aio_read(mraa_aio_context dev)
         return -1;
     }
 
-    if (dev->value_bit != raw_bits) {
-        /* Adjust the raw analog input reading to supported resolution value*/
-        if (raw_bits > dev->value_bit) {
-            shifter_value = raw_bits - dev->value_bit;
-            analog_value = analog_value >> shifter_value;
-        } else {
-            shifter_value = dev->value_bit - raw_bits;
-            analog_value = analog_value << shifter_value;
-        }
+    /* Adjust the raw analog input reading to supported resolution value*/
+    if (raw_bits < dev->value_bit) {
+        analog_value = analog_value << shifter_value;
+    } else {
+        analog_value = analog_value >> shifter_value;
     }
 
     return analog_value;
@@ -216,7 +214,6 @@ mraa_aio_read_float(mraa_aio_context dev)
         return -1.0;
     }
 
-    float max_analog_value = (1 << dev->value_bit) - 1;
     unsigned int analog_value_int = mraa_aio_read(dev);
 
     return analog_value_int / max_analog_value;

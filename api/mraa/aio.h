@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -30,7 +32,7 @@
  * AIO is the anlog input & output interface to libmraa. It is used to read or
  * set the voltage applied to an AIO pin.
  *
- * @snippet analogin_a0.c Interesting
+ * @snippet aio.c Interesting
  */
 
 #ifdef __cplusplus
@@ -51,7 +53,9 @@ extern "C" {
 typedef struct _aio* mraa_aio_context;
 
 /**
- * Initialise an Analog input device, connected to the specified pin
+ * Initialise an Analog input device, connected to the specified pin. Aio pins
+ * are always 0 indexed reguardless of their position. Check your board mapping
+ * for details. An arduino style layout will have A0 as pin14 but AIO0.
  *
  * @param pin Channel number to read ADC inputs
  * @returns aio context or NULL

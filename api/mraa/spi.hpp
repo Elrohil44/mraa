@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -51,7 +53,7 @@ typedef enum {
 *
 * This file defines the SPI interface for libmraa
 *
-* @snippet Spi-pot.cpp Interesting
+* @snippet spi.cpp Interesting
 */
 class Spi
 {
@@ -71,7 +73,7 @@ class Spi
     }
 
     /**
-     * Initialise SPI object using 'raw' mode. Mraa will go and grab the spidev device lablled /dev/spidev<bus>.<cs>
+     * Initialise SPI object using 'raw' mode. Mraa will go and grab the spidev device lablled /dev/spidev[bus].[cs]
      *
      * @param bus to use
      * @param cs to use
@@ -89,7 +91,7 @@ class Spi
      * Spi Constructor, takes a pointer to a SPI context and initialises
      * the SPI class
      *
-     * @param void * to SPI context
+     * @param spi_context void * to SPI context
      */
     Spi(void* spi_context)
     {

@@ -20,34 +20,46 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
 
-#include <stdexcept>
- #include <sstream>
 #include "iio.h"
 #include "types.hpp"
+#include <sstream>
+#include <stdexcept>
 
 namespace mraa
 {
 
-struct IioEventData
-{
+/** Iio Event Data */
+struct IioEventData {
+    /** Channel Type */
     int channelType;
+    /** Modifier */
     int modifier;
+    /** Type */
     int type;
+    /** Direction */
     int direction;
+    /** Channel */
     int channel;
+    /** Channel 2 */
     int channel2;
+    /** Difference */
     int diff;
 };
 
+/** Iio Handler */
 class IioHandler
 {
-public:
-  virtual void onIioEvent(const IioEventData& eventData) = 0;
-  virtual ~IioHandler() {};     // add an empty destructor to get rid of warning
+  public:
+    /** onIioEvent Handler */
+    virtual void onIioEvent(const IioEventData& eventData) = 0;
+    /** Destructor */
+    virtual ~IioHandler(){}; // add an empty destructor to get rid of warning
 };
 
 
@@ -56,7 +68,7 @@ public:
  *
  * This file defines the C++ iio interface for libmraa
  *
- * @snippet iio_dummy_test.cpp Interesting
+ * @snippet iio.cpp Interesting
  */
 class Iio
 {
@@ -98,6 +110,19 @@ class Iio
         if (m_iio == NULL) {
             oss << "IIO device " << deviceName << " is not valid";
             throw std::invalid_argument(oss.str());
+        }
+    }
+
+    /**
+     * IIO constructor, takes a pointer to a IIO context and initialises the IIO class
+     *
+     * @param iio_context void * to an IIO context
+     */
+    Iio(void* iio_context)
+    {
+        m_iio = (mraa_iio_context) iio_context;
+        if (m_iio == NULL) {
+            throw std::invalid_argument("Invalid IIO context");
         }
     }
 
@@ -182,7 +207,6 @@ class Iio
             oss << "IIO writeInt for attibute " << attributeName << " failed";
             throw std::runtime_error(oss.str());
         }
-
     }
 
     /**
@@ -202,7 +226,6 @@ class Iio
             oss << "IIO writeFloat for attibute " << attributeName << " failed";
             throw std::runtime_error(oss.str());
         }
-
     }
 
     /**
@@ -222,13 +245,15 @@ class Iio
     }
 
   private:
-    static void private_event_handler(iio_event_data* data, void *args)
+    static void
+    private_event_handler(iio_event_data* data, void* args)
     {
         if (args != NULL) {
-            IioHandler* handler = (IioHandler*)args;
+            IioHandler* handler = (IioHandler*) args;
             IioEventData eventData;
             int chan_type, modifier, type, direction, channel, channel2, different;
-            mraa_iio_event_extract_event(data, &chan_type, &modifier, &type, &direction, &channel, &channel2, &different);
+            mraa_iio_event_extract_event(data, &chan_type, &modifier, &type, &direction, &channel,
+                                         &channel2, &different);
             eventData.channelType = chan_type;
             eventData.modifier = modifier;
             eventData.type = type;
@@ -242,5 +267,4 @@ class Iio
 
     mraa_iio_context m_iio;
 };
-
 }

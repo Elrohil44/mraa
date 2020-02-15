@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 //For kernel 4.1+,
@@ -115,12 +117,11 @@ enum iio_event_direction {
 
 /**
  * struct iio_event_data - The actual event being pushed to userspace
- * @id:		event identifier
- * @timestamp:	best estimate of time of event occurrence (often from
- *		the interrupt handler)
  */
 struct iio_event_data {
+  /** event identifier */
 	unsigned long long int	id;
+  /** best estimate of time of event occurrence (often from the interrupt handler) */
 	long long int	timestamp;
 };
 

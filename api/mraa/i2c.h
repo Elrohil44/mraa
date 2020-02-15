@@ -20,6 +20,8 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -32,7 +34,7 @@
  * communicate to multiple i2c slaves by configuring the address.
  * @htmlinclude i2c.txt
  *
- * @snippet i2c_HMC5883L.c Interesting
+ * @snippet i2c_hmc5883l.c Interesting
  */
 
 #ifdef __cplusplus

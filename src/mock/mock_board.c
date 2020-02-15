@@ -2,24 +2,7 @@
  * Author: Alex Tereschenko <alext.mkrs@gmail.com>
  * Copyright (c) 2016 Alex Tereschenko.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include <stdlib.h>
@@ -128,6 +111,7 @@ mraa_mock_board()
     b->adv_func->uart_init_raw_replace = &mraa_mock_uart_init_raw_replace;
     b->adv_func->uart_set_baudrate_replace = &mraa_mock_uart_set_baudrate_replace;
     b->adv_func->uart_flush_replace = &mraa_mock_uart_flush_replace;
+    b->adv_func->uart_sendbreak_replace = &mraa_mock_uart_sendbreak_replace;
     b->adv_func->uart_set_flowcontrol_replace = &mraa_mock_uart_set_flowcontrol_replace;
     b->adv_func->uart_set_mode_replace = &mraa_mock_uart_set_mode_replace;
     b->adv_func->uart_set_non_blocking_replace = &mraa_mock_uart_set_non_blocking_replace;

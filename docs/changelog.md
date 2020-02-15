@@ -5,6 +5,50 @@ This changelog is meant as a quick & rough guide to what has changed between
 versions. The API is now fairly stable but when new calls/features are added
 they are listed here. Anything pre 0.2.x is ignored.
 
+**2.1.0**
+  * New platforms UP Xtreme, IPi SMARC, ROCK PI 4, Raspberry Pi 4, Ultra96
+  * Added support for chardev GPIO devices on Rock960
+  * Introduced APIs to initialize GPIOs by name
+  * Multiple fixes to address static tool scans and user submitted bug reports
+  * Revised documentation to reflect project transfer to the Eclipse Foundation
+  * Updated installation instructions for multiple distribution channels
+
+**2.0.0**
+  * New platforms IEI Tank, Ultra-96, Rock960, Hikey960, Dragonboard 820c
+  * Added support for chardev GPIO devices with implementation on several boards
+  * Added string based I/O initialization for simpler integration with other frameworks
+  * Added GTest support for unit testing
+  * Extended named LED device APIs allowing them to be listed during board definition
+  * Removed packaging and CI for obsolete devkits
+  * Multiple bug fixes and cmake improvements
+
+**1.9.0**
+  * Added support for RPi Zero W
+  * Added support for MIPS based Omega2 and Linkit Smart 7688
+  * New APIs for sysfs onboard LED control using the gpio-leds driver
+  * Restructured and cleaned-up examples
+  * Improved documentation generation and CI integration
+  * Static analysis fixes, added SonarQube badge
+  * Enhanced Node.js detection on some Linux distros (OpenSUSE)
+
+**1.8.0**
+  * Added Up2 support & grovePi subplatform support
+  * Various improvements on 96board, rpi, beaglebone & Up boards
+  * CMake 3.8+ improvements
+  * Peripheral I/O improvements
+  * Json platform improvements
+  * Static analysis cleanup using SonarQube
+
+**1.7.0**
+  * Peripheral I/O support for Android Things
+  * Deprecation of node v0.10.x and 0.12.x
+  * Documentation improvements
+
+**1.6.1**
+  * mraa-deinit bug fix
+  * rpi3 fix
+  * ALTERA_SOCFPGA -> DE_NANO_SOC
+
 **1.6.0**
   * de-10 nano board support
   * Improved Intel Joule support & renamed from GT_TUCHUCK to Joule

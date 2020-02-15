@@ -2,24 +2,7 @@
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
  * Copyright (c) 2015 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include "iio.h"
@@ -131,7 +114,6 @@ mraa_iio_get_channel_data(mraa_iio_context dev)
                     read(fd, readbuf, 31 * sizeof(char));
                     ret = sscanf(readbuf, "%ce:%c%u/%u>>%u", &shortbuf, &signchar, &chan->bits_used,
                                  &padint, &chan->shift);
-                    chan->bytes = padint / 8;
                     // probably should be 5?
                     if (ret < 0) {
                         // cleanup
@@ -139,6 +121,7 @@ mraa_iio_get_channel_data(mraa_iio_context dev)
                         close(fd);
                         return MRAA_IO_SETUP_FAILURE;
                     }
+                    chan->bytes = padint / 8;
                     chan->signedd = (signchar == 's');
                     chan->lendian = (shortbuf == 'l');
                     if (chan->bits_used == 64) {
@@ -172,10 +155,17 @@ mraa_iio_get_channel_data(mraa_iio_context dev)
     }
     closedir(dir);
 
-    // channel location has to be done in channel index order so do it afetr we
+    // channel location has to be done in channel index order so do it after we
     // have grabbed all the correct info
     for (i = 0; i < dev->chan_num; i++) {
-	chan = &dev->channels[i];
+        chan = &dev->channels[i];
+
+        if(chan->bytes <= 0)
+        {
+            syslog(LOG_ERR, "iio: Channel %d with channel bytes value <= 0");
+            return MRAA_IO_SETUP_FAILURE;
+        }
+
         if (curr_bytes % chan->bytes == 0) {
             chan->location = curr_bytes;
         } else {
@@ -332,7 +322,7 @@ mraa_iio_trigger_handler(void* arg)
 #endif
             // only can process if readsize >= enabled channel's datasize
             for (i = 0; i < (read_size / dev->datasize); i++) {
-                dev->isr((void*)&data);
+                dev->isr((char*)&data, (void*)dev->isr_args);
             }
 #ifdef HAVE_PTHREAD_CANCEL
             pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
@@ -348,20 +338,21 @@ mraa_iio_trigger_handler(void* arg)
 }
 
 mraa_result_t
-mraa_iio_trigger_buffer(mraa_iio_context dev, void (*fptr)(char* data), void* args)
+mraa_iio_trigger_buffer(mraa_iio_context dev, void (*fptr)(char*, void*), void* args)
 {
     char bu[MAX_SIZE];
     if (dev->thread_id != 0) {
         return MRAA_ERROR_NO_RESOURCES;
     }
 
-    sprintf(bu, IIO_SLASH_DEV "%d", dev->num);
+    snprintf(bu, MAX_SIZE, IIO_SLASH_DEV "%d", dev->num);
     dev->fp = open(bu, O_RDONLY | O_NONBLOCK);
     if (dev->fp == -1) {
         return MRAA_ERROR_INVALID_RESOURCE;
     }
 
     dev->isr = fptr;
+    dev->isr_args = args;
     pthread_create(&dev->thread_id, NULL, mraa_iio_trigger_handler, (void*) dev);
 
     return MRAA_SUCCESS;
@@ -465,7 +456,7 @@ mraa_iio_event_poll(mraa_iio_context dev, struct iio_event_data* data)
     if (ret == -1 || event_fd == -1)
         return MRAA_ERROR_UNSPECIFIED;
 
-    ret = read(event_fd, data, sizeof(struct iio_event_data));
+    read(event_fd, data, sizeof(struct iio_event_data));
 
     close(event_fd);
     return MRAA_SUCCESS;
@@ -505,7 +496,7 @@ mraa_iio_event_setup_callback(mraa_iio_context dev, void (*fptr)(struct iio_even
         return MRAA_ERROR_NO_RESOURCES;
     }
 
-    sprintf(bu, IIO_SLASH_DEV "%d", dev->num);
+    snprintf(bu, MAX_SIZE, IIO_SLASH_DEV "%d", dev->num);
     dev->fp = open(bu, O_RDONLY | O_NONBLOCK);
     if (dev->fp == -1) {
         return MRAA_ERROR_INVALID_RESOURCE;

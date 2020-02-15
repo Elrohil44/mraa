@@ -3,24 +3,7 @@
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
  * Copyright (c) 2014, 2015 Intel Corporation.
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SPDX-License-Identifier: MIT
  */
 
 #include <stdlib.h>
@@ -29,7 +12,9 @@
 #define __USE_LINUX_IOCTL_DEFS
 #endif
 #include <sys/ioctl.h>
-#if defined(MSYS)
+#if defined(PERIPHERALMAN)
+#include "linux/spi_kernel_headers.h"
+#elif defined(MSYS)
 // There's no spidev.h on MSYS, so we need to provide our own,
 // and only *after* including ioctl.h as that one contains prerequisites.
 #include "linux/spi_kernel_headers.h"
@@ -81,7 +66,7 @@ mraa_spi_init(int bus)
         syslog(LOG_ERR, "spi: requested bus above spi bus count");
         return NULL;
     }
-    if (plat->adv_func->spi_init_pre != NULL) {
+    if (plat->adv_func != NULL && plat->adv_func->spi_init_pre != NULL) {
         if (plat->adv_func->spi_init_pre(bus) != MRAA_SUCCESS) {
             return NULL;
         }
@@ -122,7 +107,7 @@ mraa_spi_init(int bus)
     }
     mraa_spi_context dev = mraa_spi_init_raw(plat->spi_bus[bus].bus_id, plat->spi_bus[bus].slave_s);
 
-    if (plat->adv_func->spi_init_post != NULL) {
+    if (plat->adv_func != NULL && plat->adv_func->spi_init_post != NULL) {
         mraa_result_t ret = plat->adv_func->spi_init_post(dev);
         if (ret != MRAA_SUCCESS) {
             free(dev);
@@ -155,7 +140,7 @@ mraa_spi_init_raw(unsigned int bus, unsigned int cs)
     }
 
     char path[MAX_SIZE];
-    sprintf(path, "/dev/spidev%u.%u", bus, cs);
+    snprintf(path, MAX_SIZE, "/dev/spidev%u.%u", bus, cs);
 
     dev->devfd = open(path, O_RDWR);
     if (dev->devfd < 0) {
@@ -254,9 +239,12 @@ mraa_spi_frequency(mraa_spi_context dev, int hz)
     int speed = 0;
     dev->clock = hz;
     if (ioctl(dev->devfd, SPI_IOC_RD_MAX_SPEED_HZ, &speed) != -1) {
-        if (speed < hz) {
-            dev->clock = speed;
-            syslog(LOG_WARNING, "spi: Selected speed reduced to max allowed speed");
+	if (speed < hz) {
+            // We wanted to never go higher than SPI_IOC_RD_MAX_SPEED_HZ but it
+            // seems a bunch of drivers don't have this set to the actual max
+            // so we only complain about it
+            // dev->clock = speed;
+            syslog(LOG_NOTICE, "spi: Selected speed (%d Hz) is higher than the kernel max allowed speed (%lu Hz)", hz, SPI_IOC_RD_MAX_SPEED_HZ);
         }
     }
     return MRAA_SUCCESS;
