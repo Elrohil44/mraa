@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "fogdevices.h"
 
@@ -48,42 +49,69 @@ void delivered(void *context, MQTTClient_deliveryToken dt)
 
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message)
 {
-    int i;
-    char* payloadptr;
-
     printf("Message arrived\n");
     printf("     topic: %s\n", topicName);
     printf("   message: ");
 
-    int val=0;
-    payloadptr = message->payload;
-    for(i=0; i<message->payloadlen; i++)
-    {
-        val = val*10 + (payloadptr[i]-'0');
-        //putchar(*payloadptr++);
-    }
-    //putchar('\n');
+    float val = 0;
+    val = strtof(message->payload, NULL);
+    float i2c_value = 0;
+    int32_t i2c_value_int = 0;
+    uint32_t i2c_value_uint = 0;
 
     int pin;
     int type;
     pin = topicName[strlen(topicName)-1]-'0';
 
-    if ( topicName[strlen(topicName)-6]=='G' )
+    if (topicName[strlen(topicName)-5]=='A')
     {
-        type=0;//"GPIO";
-    } else {
-        type=1;//"ADC";
+        type = ADC;
+    }
+    else if (topicName[strlen(topicName)-5]=='I')
+    {
+        type = I2C;
+        i2c_value = strtof(&message->payload[8], NULL);
+    }
+    else
+    {
+        type = GPIO;
     }
 
-    printf("Type=%d Pin=%d Value=%d\n",type,pin,val);
+    printf("Type=%d Pin=%d Value=%f\n",type,pin,val);
 
 
-    if (type==0){
-        fogdev_gpio[pin] = val;
-    } else {
-        fogdev_aio[pin] = val;
+    switch (type) {
+        case ADC:
+            fogdev_aio[pin] = (int) val;
+            break;
+        case GPIO:
+            fogdev_gpio[pin] = (int) val;
+            break;
+        case I2C:
+            switch (((char*) message->payload)[7]) {
+                case HUMIDITY:
+                    i2c_value_int = i2c_value * 1024;
+                    i2c_value_uint = i2c_value_int;
+                    fogdev_bme280_i2c[0xfd] = i2c_value_uint >> 8;
+                    fogdev_bme280_i2c[0xfe] = i2c_value_uint;
+                    break;
+                case TEMPERATURE:
+                    i2c_value_int = (i2c_value < 0 ? -i2c_value * 100 : i2c_value * 100);
+                    i2c_value_uint = i2c_value_int;
+                    fogdev_bme280_i2c[0xfa] = i2c_value > 0 ? (i2c_value_uint >> 12) & 0x7f : (i2c_value_uint >> 12) | 0x80;
+                    fogdev_bme280_i2c[0xfb] = i2c_value_uint >> 4;
+                    fogdev_bme280_i2c[0xfc] = i2c_value_uint << 4;
+                    break;
+                case PRESSURE:
+                    i2c_value_int = i2c_value * 256;
+                    i2c_value_uint = i2c_value_int;
+                    fogdev_bme280_i2c[0xf7] = i2c_value_uint >> 12;
+                    fogdev_bme280_i2c[0xf8] = i2c_value_uint >> 4;
+                    fogdev_bme280_i2c[0xf9] = i2c_value_uint << 4;
+                    break;
+            }
+        default: ;
     }
-
 
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
@@ -153,12 +181,11 @@ mraa_fogdevices_board(char* mqtt_id, char* mqtt_broker)
     b->adc_raw = 12;
     b->adc_supported = 10;
 
-    b->i2c_bus_count = 0;
-    /*b->i2c_bus_count = 1;
+    b->i2c_bus_count = 1;
     b->i2c_bus[0].bus_id = 0;
-    b->i2c_bus[0].sda = 2;
-    b->i2c_bus[0].scl = 3;
-    b->def_i2c_bus = b->i2c_bus[0].bus_id;*/
+    b->i2c_bus[0].sda = 8;
+    b->i2c_bus[0].scl = 9;
+    b->def_i2c_bus = b->i2c_bus[0].bus_id;
 
     b->spi_bus_count = 0;
     /*b->spi_bus_count = 1;
@@ -291,8 +318,6 @@ mraa_fogdevices_board(char* mqtt_id, char* mqtt_broker)
     b->pins[pos].aio.mux_total = 0;
     pos++;
 
-
-/*
     strncpy(b->pins[pos].name, "I2C0SDA", 8);
     b->pins[pos].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 1, 0, 0 };
     b->pins[pos].i2c.mux_total = 0;
@@ -304,7 +329,7 @@ mraa_fogdevices_board(char* mqtt_id, char* mqtt_broker)
     b->pins[pos].i2c.mux_total = 0;
     b->pins[pos].i2c.pinmap = 0;
     pos++;
-
+/*
     strncpy(b->pins[pos].name, "SPI0CS", 8);
     b->pins[pos].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 };
     b->pins[pos].spi.mux_total = 0;

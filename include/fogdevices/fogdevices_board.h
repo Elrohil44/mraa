@@ -6,7 +6,7 @@ extern "C" {
 
 #include "mraa_internal.h"
 
-#define MRAA_FOGDEVICES_PINCOUNT 8
+#define MRAA_FOGDEVICES_PINCOUNT 10
 
 mraa_board_t*
 mraa_fogdevices_board(char*, char*);

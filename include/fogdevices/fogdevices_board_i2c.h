@@ -7,11 +7,15 @@ extern "C" {
 #include "mraa_internal.h"
 
 // Mock I2C device address
-#define MOCK_I2C_DEV_ADDR 0x33
+#define BME280_I2C_DEV_ADDR 0x77
 // Mock I2C device data registers block length in bytes. Our code assumes it's >= 1.
-#define MOCK_I2C_DEV_DATA_LEN 10
+#define BME280_I2C_DEV_DATA_LEN 256
 // Initial value for each byte in the mock I2C device data registers
-#define MOCK_I2C_DEV_DATA_INIT_BYTE 0xAB
+#define BME280_I2C_DEV_DATA_INIT_BYTE 0x60
+
+#define TEMPERATURE 'T'
+#define HUMIDITY 'H'
+#define PRESSURE 'P'
 
 mraa_result_t
 mraa_fogdevices_i2c_init_bus_replace(mraa_i2c_context dev);
